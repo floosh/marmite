@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.src.js"></script>
+	<script type='text/javascript' src='client.js'></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<style>
+		html,
+		body,
+		.col1,
+		.col2 {
+			height: 100%;
+		}
+
+		body {
+			margin: 0;
+		}
+
+		.col1 {
+			width: 30%;
+		}
+
+		.col2 {
+			width: 70%;
+		}
+
+		.col1 {
+			background-color: #DDDDDD;
+			position: fixed;
+		}
+
+		.col2 {
+			margin-left: 30%;
+			overflow: auto;
+		}
+
+		.col1 > div,
+		.col2 > div {
+			margin: 20px;
+			padding: 10px;
+			background-color: #FFFFFF;
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="col1">
+		<div><select id="ingredients">
+			<option>Tous les ingrédients</option>
+		</select></div>
+		<div id="filters"></div>
+		<div id="graph"></div>
+	</div>
+	<div class="col2" overflow: scroll;>
+		<div id="recipes"></div>
+	</div>
+</body>
+
+</html>
