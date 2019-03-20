@@ -180,7 +180,9 @@ function ingredientsFromRecipes(recipes) {
 }
 
 var data = {};
-var context = {};
+var context = {
+	filters: []
+};
 
 $(document).ready(function () {
 
@@ -203,6 +205,7 @@ $(document).ready(function () {
 
 		$('#ingredients').select2({
 			data: Object.keys(data.ingredients),
+			width: '100%'
 		});
 
 		$('#ingredients').change(function() {
@@ -227,7 +230,7 @@ function addFilter(ingredient) {
 function update() {
 
 	// Update context
-	if (context.filters) {
+	if (context.filters.length) {
 
 		// Get all recipes
 		let allMatchingRecipes = context.filters.map(function(ingredient) {
