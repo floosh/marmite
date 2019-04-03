@@ -148,8 +148,6 @@ var cleaners = [
     /^pavé de /,
     /^livre de /,
 	/^livre d'/,
-    /^sel$/,
-    /^poivre$/,
     /^de /,
     /^d'/,
 ]
@@ -179,6 +177,7 @@ function ingredientsFromRecipes(recipes) {
 	}, {});
 }
 
+var HTMLTemplates = {};
 var data = {};
 var context = {
 	filters: []
@@ -203,16 +202,28 @@ $(document).ready(function () {
 		// Create ingredients structure
         data.ingredients = ingredientsFromRecipes(data.recipes)
 
+		// Load HTML Templates
+		$(".mustache-template").each(function() {
+			HTMLTemplates[this.id] = this.innerHTML;
+			Mustache.parse(this.innerHTML);
+		})
+
+		// Init select2 list
 		$('#ingredients').select2({
 			data: Object.keys(data.ingredients),
 			width: '100%'
 		});
 
+		// Events
 		$('#ingredients').change(function() {
 			let ingredient = $("#ingredients").val();
-			context.filters = [ingredient]
+			addFilter(ingredient);
 			update(ingredient);
 		})
+
+		$(document).on('click', ".filter-delete" , function() {
+			removeFilter($(this).attr("filter-name"));
+		});
 
 		update();
 
@@ -223,6 +234,14 @@ $(document).ready(function () {
 function addFilter(ingredient) {
 	if (context.filters.indexOf(ingredient) === -1) {
 		context.filters.push(ingredient);
+		update();
+	}
+}
+
+function removeFilter(ingredient) {
+	let index = context.filters.indexOf(ingredient);
+	if(index > -1) {
+		context.filters.splice(index, 1);
 		update();
 	}
 }
@@ -256,8 +275,9 @@ function update() {
 	}
 
 	// Show filters
+
 	if (context.filters) {
-		$("#filters").html(context.filters.join("<br/>"));
+		$("#filters").html(Mustache.render(HTMLTemplates["template-filters"], {filters: context.filters}));
 	}
 
 	$("#recipes").html(context.recipes.map(r => r.url).join('<br/>'));
