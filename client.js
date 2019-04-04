@@ -25,10 +25,12 @@ function ingredientsFromRecipes(recipes) {
 	}, {});
 }
 
+var itemsPerPage = 20;
 var HTMLTemplates = {};
 var data = {};
 var context = {
-	filters: []
+	filters: [],
+	lastId: 0
 };
 
 $(document).ready(function () {
@@ -73,6 +75,13 @@ $(document).ready(function () {
 			removeFilter($(this).attr("filter-name"));
 		});
 
+		// Infinite scroll
+		$('.col2').scroll(function(){
+			if  ($('.col2').scrollTop() >= $("#recipes").height() - $('.col2').height()){
+				loadMoreRecipes();
+			}
+	   });
+
 		update();
 
 	})
@@ -92,6 +101,11 @@ function removeFilter(ingredient) {
 		context.filters.splice(index, 1);
 		update();
 	}
+}
+
+function loadMoreRecipes() {
+	$("#recipes").append(Mustache.render(HTMLTemplates["template-recipes"], {recipes: context.recipes.slice(context.lastId, context.lastId + itemsPerPage)}));
+	context.lastId += itemsPerPage;
 }
 
 function update() {
@@ -122,8 +136,9 @@ function update() {
 		context.ingredients = data.ingredients;
 	}
 
+	context.lastId = 0;
+	loadMoreRecipes();
 	$("#filters").html(Mustache.render(HTMLTemplates["template-filters"], {filters: context.filters}));
-	$("#recipes").html(Mustache.render(HTMLTemplates["template-recipes"], {recipes: context.recipes}));
 
 	let highchartData = Object.entries(context.ingredients).map(function(ingredient) {
 		return [ingredient[0], ingredient[1].length]
