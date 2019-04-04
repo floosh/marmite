@@ -9,6 +9,7 @@
 	<script src="https://code.highcharts.com/highcharts.src.js"></script>
 	<script type='text/javascript' src='client.js'></script>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
 	<!-- Mustache templates -->
 	<script class="mustache-template" id="template-filters" type="x-tmpl-mustache">
@@ -18,6 +19,20 @@
 				{{.}}
 		</div>
 		{{/filters}}
+	</script>
+
+	<script class="mustache-template" id="template-recipes" type="x-tmpl-mustache">
+		{{#recipes}}
+		<div class="recipe">
+				<img class="recipe-picture" src="{{picture}}">
+				<a href="{{link}}">{{title}}</a><br/>
+				<div class="ratings">
+					<div class="empty-stars"></div>
+					<div class="full-stars" style="width:{{ratingPercent}}%"></div>
+					<span>({{comments}} avis)</span>
+				</div>
+		</div>
+		{{/recipes}}
 	</script>
 
 	<style>
@@ -50,12 +65,65 @@
 			overflow: auto;
 		}
 
-		.col1 > div,
-		.col2 > div {
+		.col1>div,
+		.col2>div {
 			margin: 20px;
 			padding: 10px;
 			background-color: #FFFFFF;
 		}
+
+		.recipe {
+			margin: 5px;
+			height: 100px;
+		}
+
+		.recipe-picture {
+			float: left;
+			height: 100%;
+			margin-right: 5px;
+		}
+
+		/* Handle stars rating */
+		.ratings {
+			position: relative;
+			vertical-align: middle;
+			display: inline-block;
+			color: #b1b1b1;
+			overflow: hidden;
+		}
+
+		.full-stars {
+			position: absolute;
+			left: 0;
+			top: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			color: #fde16d;
+		}
+
+		.empty-stars:before,
+		.full-stars:before {
+			content: "\2605\2605\2605\2605\2605";
+			font-size: 14pt;
+		}
+
+		.empty-stars:before {
+			-webkit-text-stroke: 1px #848484;
+		}
+
+		.full-stars:before {
+			-webkit-text-stroke: 1px orange;
+		}
+
+		/* Webkit-text-stroke is not supported on firefox or IE */
+
+		/* Firefox */
+		@-moz-document url-prefix() {
+			.full-stars {
+				color: #ECBE24;
+			}
+		}
+
 	</style>
 
 </head>
@@ -63,8 +131,8 @@
 <body>
 	<div class="col1">
 		<div><select id="ingredients">
-			<option>Tous les ingrédients</option>
-		</select></div>
+				<option>Tous les ingrédients</option>
+			</select></div>
 		<div id="filters"></div>
 		<div id="graph"></div>
 	</div>
