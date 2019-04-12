@@ -15,7 +15,7 @@
 	<script class="mustache-template" id="template-filters" type="x-tmpl-mustache">
 		{{#filters}}
 		<div class="filter">
-				<a href="#" style="color:gray" class="filter-delete" filter-name="{{.}}">X</a>
+				<a href="#" style="color:gray; text-decoration: none;" class="filter-delete" filter-name="{{.}}">🗙</a>
 				{{.}}
 		</div>
 		{{/filters}}
@@ -65,12 +65,10 @@
 			overflow: auto;
 		}
 
-		.col1>div,
+		/* .col1>div,
 		.col2>div {
 			margin: 20px;
-			padding: 10px;
-			background-color: #FFFFFF;
-		}
+		} */
 
 		.recipe {
 			margin: 5px;
@@ -81,6 +79,11 @@
 			float: left;
 			height: 100%;
 			margin-right: 5px;
+		}
+
+		.panel {
+			background: #ffffff;
+			padding: 10px;
 		}
 
 		/* #recipes {
@@ -134,12 +137,23 @@
 </head>
 
 <body>
-	<div class="col1">
-		<div><select id="ingredients">
-				<option>Tous les ingrédients</option>
-			</select></div>
-		<div id="filters"></div>
-		<div id="graph"></div>
+	<div class="col1 pure-g">
+		<div class="pure-u-1">
+			<div class="panel">
+				<select id="ingredients">
+					<option>Tous les ingrédients</option>
+				</select>
+			</div>
+		</div>
+		<div class="pure-u-1-2">
+			<div id="filters" class="panel"></div>
+		</div>
+		<div class="pure-u-1-2">
+			<div id="counter" class="panel"></div>
+		</div>
+		<div class="pure-u-1">
+			<div id="graph" class="panel"></div>
+		</div>
 	</div>
 	<div class="col2" overflow: scroll;>
 		<div id="recipes"></div>

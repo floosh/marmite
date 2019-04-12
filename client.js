@@ -9,23 +9,20 @@ function getJson(url) {
     });
 }
 
-function uniq(value, index, self) {
-    return self.indexOf(value) === index;
-}
-
 function ingredientsFromRecipes(recipes) {
 	return recipes.reduce(function(acc, recipe, index) {
 		recipe.ingredients.forEach(function(ingredient) {
 			if (!acc[ingredient.name]) {
 				acc[ingredient.name] = [];
 			}
-			acc[ingredient.name].push(index);
+			if (acc[ingredient.name].indexOf(index) == -1) {
+				acc[ingredient.name].push(index);
+			}
 		});
 		return acc;
 	}, {});
 }
 
-var itemsPerPage = 20;
 var HTMLTemplates = {};
 var data = {};
 var context = {
@@ -38,13 +35,6 @@ $(document).ready(function () {
 	// Loading dataset
     getJson('./recipes.json').then(function (recipes) {
 
-		// Clean recipes
-        // data.recipes = recipes.reduce(function(acc, recipe) {
-		// 	if (!acc.find(r => r.link == recipe.link)) {
-		// 		acc.push(recipe);
-		// 	}
-		// 	return acc;
-		// }, []);
 		data.recipes = recipes.map(function(recipe) {
 			recipe.ratingPercent = recipe.rating*20;
 			return recipe;
@@ -78,7 +68,7 @@ $(document).ready(function () {
 		// Infinite scroll
 		$('.col2').scroll(function(){
 			if  ($('.col2').scrollTop() >= $("#recipes").height() - $('.col2').height()){
-				loadMoreRecipes();
+				loadRecipes(false);
 			}
 	   });
 
@@ -103,8 +93,14 @@ function removeFilter(ingredient) {
 	}
 }
 
-function loadMoreRecipes() {
-	$("#recipes").append(Mustache.render(HTMLTemplates["template-recipes"], {recipes: context.recipes.slice(context.lastId, context.lastId + itemsPerPage)}));
+function loadRecipes(clear) {
+	let itemsPerPage = 20;
+	let html = Mustache.render(HTMLTemplates["template-recipes"], {recipes: context.recipes.slice(context.lastId, context.lastId + itemsPerPage)});
+	if (clear) {
+		$("#recipes").html(html);
+	} else {
+		$("#recipes").append(html);
+	}
 	context.lastId += itemsPerPage;
 }
 
@@ -137,8 +133,16 @@ function update() {
 	}
 
 	context.lastId = 0;
-	loadMoreRecipes();
+	updateView();
+}
+
+
+function updateView() {
+
+	loadRecipes(true);
 	$("#filters").html(Mustache.render(HTMLTemplates["template-filters"], {filters: context.filters}));
+	$("#counter").html(context.recipes.length + " recettes");
+
 
 	let highchartData = Object.entries(context.ingredients).map(function(ingredient) {
 		return [ingredient[0], ingredient[1].length]
@@ -192,5 +196,4 @@ function update() {
 			}
 		}]
 	});
-
 }

@@ -7,7 +7,7 @@ const recipes = require('./links.json');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 
-fs.unlinkSync('marmiton.db');
+//fs.unlinkSync('marmiton.db');
 const db = new sqlite3.Database('marmiton.db');
 
 var url_marmiton = "https://www.marmiton.org";
@@ -242,28 +242,29 @@ function parseRecipe(url) {
 }
 
 // Init DB
-db.serialize(function() {
-	db.run("CREATE TABLE recipes (id INTEGER PRIMARY KEY, title TEXT, link TEXT, rating REAL, comments INTEGER, picture TEXT)");
-	db.run("CREATE TABLE ingredients (name TEXT, full_name TEXT, quantity REAL, recipe INTEGER)");
-});
+// db.serialize(function() {
+// 	db.run("CREATE TABLE recipes (id INTEGER PRIMARY KEY, title TEXT, link TEXT, rating REAL, comments INTEGER, picture TEXT)");
+// 	db.run("CREATE TABLE ingredients (name TEXT, full_name TEXT, quantity REAL, recipe INTEGER)");
+// });
 
 
-async function loadAllRecipes() {
-    let nb_recipes_to_load = 200;
-    for (var i = 0; i < nb_recipes_to_load; i++) {
-		console.log(recipes[i]);
+async function loadAllRecipes(lastId) {
+	lastId = lastId || -1;
+    let nb_recipes_to_load = recipes.length;
+	//let nb_recipes_to_load = 50;
+
+    for (var i = lastId+1; i < nb_recipes_to_load; i++) {
 		let recipe = await parseRecipe(recipes[i]);
 
-		var stmt = db.prepare("INSERT INTO recipes VALUES (?, ?, ?, ?, ?, ?)");
-		var stmt_i = db.prepare("INSERT INTO ingredients VALUES (?, ?, ?, ?)");
-		stmt.run(i, recipe.title, recipe.link, recipe.rating, recipe.comments, recipe.picture);
+		db.serialize(function() {
+			db.run("begin transaction");
+			db.run("INSERT INTO recipes VALUES (?, ?, ?, ?, ?, ?)", i, recipe.title, recipe.link, recipe.rating, recipe.comments, recipe.picture);
 
-		recipe.ingredients.forEach(function(ingredient) {
-			stmt_i = stmt_i.run(clean(ingredient.name), ingredient.name, ingredient.quantity, i);
+			recipe.ingredients.forEach(function(ingredient) {
+				db.run("INSERT INTO ingredients VALUES (?, ?, ?, ?)", clean(ingredient.name), ingredient.name, ingredient.quantity, i);
+			});
+			db.run("commit");
 		});
-
-		stmt_i.finalize();
-		stmt.finalize();
 
         if (i % 10 == 0) {
 			console.log(i)
@@ -271,6 +272,18 @@ async function loadAllRecipes() {
     }
 }
 
-loadAllRecipes().then(function () {
-    console.log("done");
+db.get("select id from recipes ORDER by id desc limit 1", function(err, row) {
+	console.log(row.id);
+	console.log(recipes[row.id]);
+	loadAllRecipes(row.id).then(function () {
+		console.log("done");
+	})
 })
+
+
+// var start = Date.now();
+// loadAllRecipes().then(function () {
+// 	console.log("done");
+// 	console.log((Date.now() - start) + "ms");
+// })
+
