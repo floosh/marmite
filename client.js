@@ -23,6 +23,10 @@ function ingredientsFromRecipes(recipes) {
 	}, {});
 }
 
+function recipeScore(recipe) {
+	return recipe.comments * recipe.rating;
+}
+
 var HTMLTemplates = {};
 var data = {};
 var context = {
@@ -38,6 +42,8 @@ $(document).ready(function () {
 		data.recipes = recipes.map(function(recipe) {
 			recipe.ratingPercent = recipe.rating*20;
 			return recipe;
+		}).sort(function(r1, r2) {
+			return recipeScore(r2) > recipeScore(r1);
 		});
 
 		// Create ingredients structure
