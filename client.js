@@ -36,6 +36,8 @@ var context = {
 
 $(document).ready(function () {
 
+	setLoading(true);
+
 	// Loading dataset
     getJson('./recipes.json').then(function (recipes) {
 
@@ -99,6 +101,10 @@ function removeFilter(ingredient) {
 	}
 }
 
+function setLoading(loading) {
+	document.getElementById("pizza").hidden = !loading;
+}
+
 function loadRecipes(clear) {
 	let itemsPerPage = 20;
 	let html = Mustache.render(HTMLTemplates["template-recipes"], {recipes: context.recipes.slice(context.lastId, context.lastId + itemsPerPage)});
@@ -140,6 +146,9 @@ function update() {
 
 	context.lastId = 0;
 	updateView();
+
+	setLoading(false);
+
 }
 
 
@@ -199,7 +208,8 @@ function updateView() {
 				click: function(e) {
 					addFilter(e.point.name);
 				}
-			}
+			},
+			color: "#f47321"
 		}]
 	});
 }

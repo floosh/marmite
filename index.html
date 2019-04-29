@@ -56,7 +56,6 @@
 		}
 
 		.col1 {
-			background-color: #DDDDDD;
 			position: fixed;
 		}
 
@@ -65,10 +64,27 @@
 			overflow: auto;
 		}
 
-		/* .col1>div,
-		.col2>div {
-			margin: 20px;
-		} */
+		#pizza {
+			display: inline-block;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			width: 500px;
+			height: 500px;
+			margin: auto;
+		}
+
+		#pizza > img {
+			width: 100%;
+			-webkit-animation:spin 10s linear infinite;
+			-moz-animation:spin 10s linear infinite;
+			animation:spin 10s linear infinite;
+		}
+		@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+		@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+		@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 		.recipe {
 			margin: 5px;
@@ -137,6 +153,9 @@
 </head>
 
 <body>
+	<div id="pizza">
+		<img src="pizza.png">
+	</div>
 	<div class="col1 pure-g">
 		<div class="pure-u-1">
 			<div class="panel">
