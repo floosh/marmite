@@ -2,6 +2,20 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('marmiton.db');
 const fs = require('fs');
 
+function ingredientsFromRecipes(recipes) {
+	return recipes.reduce(function(acc, recipe, index) {
+		recipe.ingredients.forEach(function(ingredient) {
+			if (!acc[ingredient.name]) {
+				acc[ingredient.name] = [];
+			}
+			if (acc[ingredient.name].indexOf(index) == -1) {
+				acc[ingredient.name].push(index);
+			}
+		});
+		return acc;
+	}, {});
+}
+
 db.all("Select * from recipes", [], function(err, recipes) {
 
 	for (var i = 0; i < recipes.length; i++){
@@ -32,7 +46,12 @@ db.all("Select * from recipes", [], function(err, recipes) {
 
 	 	fs.writeFile('recipes.json', JSON.stringify(recipes), (err) => {
 			if (err) throw err;
-	 		console.log('Done');
-	 	});
+	 		console.log('Recipes - done');
+		 });
+
+		fs.writeFile('ingredients.json', JSON.stringify(ingredientsFromRecipes(recipes)), (err) => {
+			if (err) throw err;
+	 		console.log('Ingredients - done');
+		 });
 	})
 })

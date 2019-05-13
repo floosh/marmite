@@ -49,7 +49,7 @@ $(document).ready(function () {
 		});
 
 		// Create ingredients structure
-        data.ingredients = ingredientsFromRecipes(data.recipes)
+		data.ingredients = ingredientsFromRecipes(data.recipes);
 
 		// Load HTML Templates
 		$(".mustache-template").each(function() {
@@ -102,7 +102,12 @@ function removeFilter(ingredient) {
 }
 
 function setLoading(loading) {
-	document.getElementById("pizza").hidden = !loading;
+	loading ? $("#loader").show() : $("#loader").hide();
+// 	//$("#loader").children().text((percent || 0) + "%");
+// 	// $("#test").text(percent);
+// 	// $("#test").html(percent);
+// 	document.getElementById("test").textContent = percent + " ";
+// 	console.log(percent);
 }
 
 function loadRecipes(clear) {
@@ -117,6 +122,8 @@ function loadRecipes(clear) {
 }
 
 function update() {
+
+	setLoading(true);
 
 	// Update context
 	if (context.filters.length) {
@@ -148,7 +155,6 @@ function update() {
 	updateView();
 
 	setLoading(false);
-
 }
 
 

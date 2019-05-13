@@ -9,13 +9,14 @@
 	<script src="https://code.highcharts.com/highcharts.src.js"></script>
 	<script type='text/javascript' src='client.js'></script>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+		integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
 	<!-- Mustache templates -->
 	<script class="mustache-template" id="template-filters" type="x-tmpl-mustache">
 		{{#filters}}
 		<div class="filter">
-				<a href="#" style="color:gray; text-decoration: none;" class="filter-delete" filter-name="{{.}}">🗙</a>
+				<a href="#" style="color:gray; text-decoration: none;" class="filter-delete" filter-name="{{.}}">✕</a>
 				{{.}}
 		</div>
 		{{/filters}}
@@ -23,15 +24,17 @@
 
 	<script class="mustache-template" id="template-recipes" type="x-tmpl-mustache">
 		{{#recipes}}
-		<div class="recipe">
-				<img class="recipe-picture" src="{{picture}}">
-				<a href="{{link}}">{{title}}</a><br/>
+		<a href="{{link}}" target="_blank" class="recipe">
+			<div class="recipe-picture" style="background-image: url('{{picture}}')"/>
+			<div class="recipe-description">
+				<p>{{title}}</p>
 				<div class="ratings">
 					<div class="empty-stars"></div>
 					<div class="full-stars" style="width:{{ratingPercent}}%"></div>
-					<span>({{comments}} avis)</span>
 				</div>
-		</div>
+				<span>- {{comments}} avis</span>
+			</div>
+		</a>
 		{{/recipes}}
 	</script>
 
@@ -64,7 +67,7 @@
 			overflow: auto;
 		}
 
-		#pizza {
+		#loader {
 			display: inline-block;
 			position: fixed;
 			top: 0;
@@ -73,28 +76,79 @@
 			right: 0;
 			width: 500px;
 			height: 500px;
+			line-height: 500px;
 			margin: auto;
 		}
 
-		#pizza > img {
-			width: 100%;
-			-webkit-animation:spin 10s linear infinite;
-			-moz-animation:spin 10s linear infinite;
-			animation:spin 10s linear infinite;
+		#loader > p {
+			text-align: center;
+			margin: 0;
 		}
-		@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-		@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-		@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+		#loader::before {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			background-image: url("donut.png");
+			background-position: center;
+			background-repeat: no-repeat;
+			content: '';
+			-webkit-animation: spin 15s infinite linear;
+			animation: spin 15s infinite linear;
+		}
+
+		@keyframes spin{
+			from{transform:rotate(0deg)}
+			to{transform:rotate(360deg)}
+		}
 
 		.recipe {
-			margin: 5px;
-			height: 100px;
+			height: 300px;
+			width: 300px;
+			display: inline-block;
+			position: relative;
+			color: black;
+			text-decoration: none;
+			overflow: hidden;
+		}
+
+		.recipe-description {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			min-height: 50px;
+			background-color: #ffffffd6;
+			padding: 10px;
+			line-height: 20px;
+			box-sizing: border-box;
+		}
+
+		.recipe-description > p {
+			margin: 0;
+			font-weight: bold;
+			margin-bottom: 5px;
 		}
 
 		.recipe-picture {
-			float: left;
+			width: 100%;
 			height: 100%;
-			margin-right: 5px;
+			box-sizing: border-box;
+			background-position: center;
+			background-size: cover;
+			transition: all 0.1s ease;
+		}
+
+		.recipe:hover > .recipe-picture  {
+			transform: scale(1.1);
+		}
+
+		@keyframes shrink {
+			0% {
+				background-size: 100% 100%;
+			}
+			100% {
+				background-size: 110% 110%;
+			}
 		}
 
 		.panel {
@@ -102,17 +156,12 @@
 			padding: 10px;
 		}
 
-		/* #recipes {
-			height: 300px;
-  			overflow: auto;
-		} */
-
 		/* Handle stars rating */
 		.ratings {
 			position: relative;
 			vertical-align: middle;
 			display: inline-block;
-			color: #b1b1b1;
+			color: white;
 			overflow: hidden;
 		}
 
@@ -122,40 +171,38 @@
 			top: 0;
 			white-space: nowrap;
 			overflow: hidden;
-			color: #fde16d;
+			color: #f47321;
 		}
 
 		.empty-stars:before,
 		.full-stars:before {
 			content: "\2605\2605\2605\2605\2605";
-			font-size: 14pt;
+			font-size: 16pt;
 		}
 
 		.empty-stars:before {
-			-webkit-text-stroke: 1px #848484;
+			-webkit-text-stroke: 2px #f47321;
 		}
 
 		.full-stars:before {
-			-webkit-text-stroke: 1px orange;
+			-webkit-text-stroke: 2px #f47321;
 		}
-
-		/* Webkit-text-stroke is not supported on firefox or IE */
 
 		/* Firefox */
 		@-moz-document url-prefix() {
 			.full-stars {
-				color: #ECBE24;
+				color: #f47321;
 			}
 		}
+
+
 
 	</style>
 
 </head>
 
 <body>
-	<div id="pizza">
-		<img src="pizza.png">
-	</div>
+	<div id="loader"></div>
 	<div class="col1 pure-g">
 		<div class="pure-u-1">
 			<div class="panel">
