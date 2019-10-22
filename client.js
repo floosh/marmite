@@ -24,7 +24,7 @@ function ingredientsFromRecipes(recipes) {
 }
 
 function recipeScore(recipe) {
-	return recipe.comments * recipe.rating;
+	return (recipe.comments * recipe.rating) || 0;
 }
 
 var HTMLTemplates = {};
@@ -142,6 +142,8 @@ function update() {
 
 		context.recipes = fullyMatchingRecipes.map(function(recipeId) {
 			return data.recipes[recipeId];
+		}).sort(function(r1, r2) {
+			return recipeScore(r2) > recipeScore(r1);
 		});
 
 		context.ingredients = ingredientsFromRecipes(context.recipes);
